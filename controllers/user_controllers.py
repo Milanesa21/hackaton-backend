@@ -29,3 +29,22 @@ def authenticate_user(db: Session, username: str, password: str):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials")
     
     return user
+
+#Funcion para borrar un usuario
+def delete_user(db: Session, username: str):
+    user = get_user_by_username(db, username)
+    if not user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+    db.delete(user)
+    db.commit()
+    return user
+
+#Funcion para actualizar un usuario
+def update_user(db: Session, id: int, new_name: str):
+  user = db.query(Users).filter(Users.id == id).first()
+  if user:
+      user.full_name = new_name
+      db.commit()
+      db.refresh(user)
+      return True
+  return False
